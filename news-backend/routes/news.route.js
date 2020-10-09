@@ -2,6 +2,7 @@ module.exports = (app) => {
   var multer = require('multer');
   var upload = multer({ dest: 'uploads/' });
   const checkAuth = require('../services/auth');
+  const request = require('request');
 
   const news_controller = require('../controllers/news.controller');
 
@@ -29,4 +30,18 @@ module.exports = (app) => {
     checkAuth,
     news_controller.update_news
   );
+
+  // Fetch News URL
+  app.post('/api/url', checkAuth, (req, res) => {
+    let response = '';
+    let url = req.body.url;
+    request(url, (err, resp, body) => {
+      if (err) {
+        response = 'error';
+      } else {
+        response = body;
+      }
+      res.send(response);
+    });
+  });
 };

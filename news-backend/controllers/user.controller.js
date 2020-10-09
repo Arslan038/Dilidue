@@ -183,7 +183,6 @@ exports.delete_user = async (req, res) => {
 // UPDATE USER
 exports.update_user = async (req, res) => {
   try {
-    console.log(req.body);
     // Find User from Users
     const isUserExists = await User.findOne({ where: { id: req.params.id } });
 
@@ -209,6 +208,7 @@ exports.update_user = async (req, res) => {
       if (update && update == 1) {
         res.status(201).json({
           message: 'User Updated Successfully.',
+          user: user,
         });
       } else {
         res.status(500).json({
@@ -229,7 +229,6 @@ exports.update_user = async (req, res) => {
 
 exports.update_password = async (req, res) => {
   try {
-    console.log(req.body.password);
     bcrypt.hash(req.body.password, 10, async (err, hash) => {
       if (err) {
         res.status(500).json({

@@ -58,6 +58,7 @@
 
 <script>
 import AppOptions from "../config/AppOptions.vue";
+import Repository from "../Repository/Repository";
 import { RepositoryFactory } from "../Repository/RepositoryFactory";
 const UserRepository = RepositoryFactory.get("user_repository");
 import mixins from "../mixins/global";
@@ -97,6 +98,7 @@ export default {
           user.token = resp.data.token;
           if (user.role == "admin") {
             this.setUser(user);
+            Repository.defaults.headers.Authorization = `Bearer ${user.token}`;
             this.toast(resp.data.message, "Login", "success");
             let self = this;
             setTimeout(() => {

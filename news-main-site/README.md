@@ -1,4 +1,4 @@
-# vuestudio
+# news-main
 
 ## Project setup
 ```

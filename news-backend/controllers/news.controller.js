@@ -47,7 +47,16 @@ exports.create_news = async (req, res) => {
 // Get News List
 exports.fetch_news = async (req, res) => {
   try {
-    await News.findAll()
+    await News.findAll({
+      include: [
+        {
+          model: db.users,
+        },
+        {
+          model: db.news_likes,
+        },
+      ],
+    })
       .then((result) => {
         res.status(201).json(result);
       })
