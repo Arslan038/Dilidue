@@ -14,7 +14,7 @@
       'app-footer-fixed': appOptions.appWithFooter,
     }"
   >
-    <vue-ins-progress-bar></vue-ins-progress-bar>
+    <!-- <vue-ins-progress-bar></vue-ins-progress-bar> -->
     <Header v-if="!appOptions.appWithoutHeader" />
     <Sidebar v-if="!appOptions.appWithoutSidebar" />
     <router-view></router-view>
@@ -46,27 +46,27 @@ export default {
     Footer,
   },
   mounted() {
-    this.$insProgress.finish();
+    //this.$insProgress.finish();
   },
   created() {
-    this.$insProgress.start();
+    // this.$insProgress.start();
 
-    this.$router.beforeEach((to, from, next) => {
-      this.$insProgress.start();
+    // this.$router.beforeEach((to, from, next) => {
+    //   this.$insProgress.start();
 
-      if (this.appOptions.appSidebarMobileToggled == true) {
-        this.appOptions.appSidebarMobileClosed = true;
+    //   if (this.appOptions.appSidebarMobileToggled == true) {
+    //     this.appOptions.appSidebarMobileClosed = true;
 
-        setTimeout(() => {
-          this.appOptions.appSidebarMobileClosed = false;
-          this.appOptions.appSidebarMobileToggled = false;
-        }, 250);
-      }
-      next();
-    });
-    this.$router.afterEach(() => {
-      this.$insProgress.finish();
-    });
+    //     setTimeout(() => {
+    //       this.appOptions.appSidebarMobileClosed = false;
+    //       this.appOptions.appSidebarMobileToggled = false;
+    //     }, 250);
+    //   }
+    //   next();
+    // });
+    // this.$router.afterEach(() => {
+    //   this.$insProgress.finish();
+    // });
   },
 
   watch: {

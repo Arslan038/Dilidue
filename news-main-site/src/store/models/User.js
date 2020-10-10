@@ -109,6 +109,21 @@ const actions = {
       return 0;
     }
   },
+
+  // Social Signup
+  async socialSignup({ commit }) {
+    try {
+      let resp = await UserRepository.socialSignup();
+      console.log(resp.data);
+    } catch (err) {
+      console.log(err);
+      commit('setToast', {
+        message: err.message,
+        color: 'red',
+        show: true,
+      });
+    }
+  },
 };
 
 const mutations = {

@@ -265,3 +265,23 @@ exports.update_password = async (req, res) => {
     });
   }
 };
+
+// CREATE USER VIA LINKEDIN
+
+exports.create_via_linkedin = async (req, res) => {
+  try {
+    require.status(201).json(req.user);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
+// Failed Attempt
+
+exports.failed_attempt = async (req, res) => {
+  res.status(500).json({
+    message: 'Something went wrong!',
+  });
+};

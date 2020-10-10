@@ -3,7 +3,14 @@
     <v-form @submit.prevent lazy-validation ref="form">
       <v-row class="mx-1 my-5" align="center" justify="center">
         <v-col cols="12">
-          <v-btn depressed color="indigo darken-4" dark large block>
+          <v-btn
+            depressed
+            color="indigo darken-4"
+            @click="linkedInSignup"
+            dark
+            large
+            block
+          >
             <v-icon class="mr-2">mdi-linkedin</v-icon>Signup with Linkedin
           </v-btn>
         </v-col>
@@ -111,7 +118,10 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['createUser']),
+    ...mapActions(['createUser', 'socialSignup']),
+    linkedInSignup() {
+      this.socialSignup();
+    },
     login() {
       this.$emit('login', 0);
     },

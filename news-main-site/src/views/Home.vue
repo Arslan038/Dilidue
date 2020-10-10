@@ -271,10 +271,6 @@
           </v-expansion-panel>
         </v-expansion-panels>
       </v-card>
-
-      <!-- <div v-html="html_content"></div>
-        <div>{{ html_content }}</div> -->
-      <!-- <iframe src="http://localhost:4000/" frameborder="0"></iframe> -->
     </v-dialog>
 
     <v-dialog v-model="editNoteModal" max-width="500px" scrollable>
@@ -373,34 +369,39 @@ export default {
       }
     },
     checkRange(e) {
-      if (this.locs.pin == 1) {
-        if (e == 0) {
-          this.filterBrandings(3);
+      if (e == 0) {
+        this.filterNow(3);
+      }
+      if (e == 1) {
+        this.filterNow(6);
+      }
+      if (e == 2) {
+        this.filterNow(12);
+      }
+      if (e == 3) {
+        this.filterNow(36);
+      }
+      if (e == 4) {
+        this.filterNow(60);
+      }
+      if (e == 5) {
+        this.filterNow(120);
+      }
+      if (e == 6) {
+        if (this.locs.pin == 0) {
+          this.setAllNews(this.getNews, true);
         }
-        if (e == 1) {
-          this.filterBrandings(6);
-        }
-        if (e == 2) {
-          this.filterBrandings(12);
-        }
-        if (e == 3) {
-          this.filterBrandings(36);
-        }
-        if (e == 4) {
-          this.filterBrandings(60);
-        }
-        if (e == 5) {
-          this.filterBrandings(120);
-        }
-        if (e == 6) {
+        if (this.locs.pin == 1) {
           this.setAllBrandings(this.getBrandings, true);
         }
-      } else {
-        this.$store.commit('setToast', {
-          message: 'Please Enable Brandings.',
-          color: 'warning',
-          show: true,
-        });
+      }
+    },
+    filterNow(value) {
+      if (this.locs.pin == 0) {
+        this.filterNews(value);
+      }
+      if (this.locs.pin == 1) {
+        this.filterBrandings(value);
       }
     },
     filterBrandings(range) {
@@ -408,10 +409,11 @@ export default {
         this.brandings = [];
         let val = this.getBrandings;
         val.forEach((item) => {
-          let startDate = moment(item.start_date);
-          let endDate = moment(item.end_date);
+          let createdDate = moment(item.createdAt);
+          let currentDate = new Date().toISOString();
+          let today = moment(currentDate);
 
-          const duration = moment.duration(endDate.diff(startDate));
+          const duration = moment.duration(today.diff(createdDate));
           const months = duration.asMonths();
 
           if (months <= range) {
@@ -443,6 +445,53 @@ export default {
           }
         });
         this.locs.locations = this.brandings;
+      } else {
+        this.$store.commit('setToast', {
+          message: 'No Branding Found',
+          show: true,
+        });
+      }
+    },
+    filterNews(range) {
+      if (this.getNews && this.getNews.length) {
+        this.news = [];
+        let val = this.getNews;
+        val.forEach((item) => {
+          let createdDate = moment(item.createdAt);
+          let currentDate = new Date().toISOString();
+          let today = moment(currentDate);
+
+          const duration = moment.duration(today.diff(createdDate));
+          const months = duration.asMonths();
+          if (months <= range) {
+            let itemData = item;
+            let position = {
+              lat: item.position.lat,
+              lng: item.position.lng,
+            };
+            itemData.position = position;
+
+            let newsoSave = {
+              count: 1,
+              position: position,
+              data: [],
+              type: 'news',
+            };
+
+            let findNews = this.brandings.find(
+              (n) =>
+                n.position.lat == position.lat && n.position.lng == position.lng
+            );
+            if (findNews) {
+              findNews.count++;
+              findNews.data.push(itemData);
+            } else {
+              newsoSave.data.push(itemData);
+              this.news.push(newsoSave);
+            }
+          }
+        });
+        this.locs.locations = this.news;
       } else {
         this.$store.commit('setToast', {
           message: 'No Branding Found',
@@ -617,93 +666,144 @@ export default {
     },
 
     searchByCustomRange() {
+      if (this.locs.pin == 0) {
+        this.searchNewInRange();
+      }
       if (this.locs.pin == 1) {
-        if (!this.filter_start_date || !this.filter_end_date) {
-          this.$store.commit('setToast', {
-            message: 'Please Pick Start and End Date',
-            color: 'warning',
-            show: true,
-          });
-        } else {
-          if (this.getBrandings && this.getBrandings.length) {
-            let val = this.getBrandings;
-            this.brandings = [];
-            val.forEach((item) => {
-              let itemStartDate = moment(item.start_date);
-              let itemEndDate = moment(item.end_date);
-
-              let filter_start = moment(this.filter_start_date);
-              let filter_end = moment(this.filter_end_date);
-
-              // Calculate Difference of Filter Days
-
-              const filterDuration = moment.duration(
-                filter_end.diff(filter_start)
-              );
-              const filterDifference = filterDuration.asDays();
-
-              // Calculate Difference of Branding Days
-
-              const itemDuration = moment.duration(
-                itemEndDate.diff(itemStartDate)
-              );
-              const itemDifference = itemDuration.asDays();
-
-              if (itemDifference <= filterDifference) {
-                let itemData = item;
-                let position = {
-                  lat: null,
-                  lng: null,
-                };
-                position.lat = item.position.lat;
-                position.lng = item.position.lng;
-
-                itemData.position = position;
-
-                let brandingToSave = {
-                  count: 1,
-                  position: position,
-                  data: [],
-                  type: 'brandings',
-                };
-
-                let findBranding = this.brandings.find(
-                  (n) =>
-                    n.position.lat == position.lat &&
-                    n.position.lng == position.lng
-                );
-                if (findBranding) {
-                  findBranding.count++;
-                  findBranding.data.push(itemData);
-                } else {
-                  brandingToSave.data.push(itemData);
-                  this.brandings.push(brandingToSave);
-                }
-              }
-            });
-            this.locs.locations = this.brandings;
-          } else {
-            this.$store.commit('setToast', {
-              message: 'No Branding Found',
-              show: true,
-            });
-          }
-        }
-      } else {
-        this.$store.commit('setToast', {
-          message: 'Please Enable Brandings.',
-          show: true,
-        });
+        this.searchBrandingsInRange();
       }
     },
 
-    setAllNews(val) {
+    searchNewInRange() {
+      if (!this.filter_start_date || !this.filter_end_date) {
+        this.$store.commit('setToast', {
+          message: 'Please Pick Start and End Date',
+          color: 'warning',
+          show: true,
+        });
+      } else {
+        if (this.getNews && this.getNews.length) {
+          let val = this.getNews;
+          this.news = [];
+          val.forEach((item) => {
+            let filter_start = moment(this.filter_start_date);
+            let filter_end = moment(this.filter_end_date);
+
+            let createdDate = moment(item.createdAt);
+
+            // Start Date // End Date // CreatedDate
+
+            // Filter All News where CreatedAt >= StartDate and <= EndDate
+
+            if (createdDate >= filter_start && createdDate <= filter_end) {
+              let itemData = item;
+              let position = {
+                lat: null,
+                lng: null,
+              };
+              position.lat = item.position.lat;
+              position.lng = item.position.lng;
+
+              itemData.position = position;
+
+              let newsToSave = {
+                count: 1,
+                position: position,
+                data: [],
+                type: 'news',
+              };
+
+              let findNews = this.news.find(
+                (n) =>
+                  n.position.lat == position.lat &&
+                  n.position.lng == position.lng
+              );
+              if (findNews) {
+                findNews.count++;
+                findNews.data.push(itemData);
+              } else {
+                newsToSave.data.push(itemData);
+                this.news.push(newsToSave);
+              }
+            }
+          });
+          this.locs.locations = this.news;
+        }
+      }
+    },
+
+    searchBrandingsInRange() {
+      if (!this.filter_start_date || !this.filter_end_date) {
+        this.$store.commit('setToast', {
+          message: 'Please Pick Start and End Date',
+          color: 'warning',
+          show: true,
+        });
+      } else {
+        if (this.getBrandings && this.getBrandings.length) {
+          let val = this.getBrandings;
+          this.brandings = [];
+          val.forEach((item) => {
+            let filter_start = moment(this.filter_start_date);
+            let filter_end = moment(this.filter_end_date);
+
+            let createdDate = moment(item.createdAt);
+
+            // Start Date // End Date // CreatedDate
+
+            // Filter All Brandings where CreatedAt >= StartDate and <= EndDate
+
+            if (createdDate >= filter_start && createdDate <= filter_end) {
+              let itemData = item;
+              let position = {
+                lat: null,
+                lng: null,
+              };
+              position.lat = item.position.lat;
+              position.lng = item.position.lng;
+
+              itemData.position = position;
+
+              let brandingToSave = {
+                count: 1,
+                position: position,
+                data: [],
+                type: 'brandings',
+              };
+
+              let findBranding = this.brandings.find(
+                (n) =>
+                  n.position.lat == position.lat &&
+                  n.position.lng == position.lng
+              );
+              if (findBranding) {
+                findBranding.count++;
+                findBranding.data.push(itemData);
+              } else {
+                brandingToSave.data.push(itemData);
+                this.brandings.push(brandingToSave);
+              }
+            }
+          });
+          this.locs.locations = this.brandings;
+        }
+      }
+    },
+
+    setAllNews(val, filter) {
       val.forEach((item) => {
         let itemData = item;
         let position = {
-          lat: item.position.coordinates[0],
-          lng: item.position.coordinates[1],
+          lat: null,
+          lng: null,
         };
+        if (filter) {
+          position.lat = item.position.lat;
+          position.lng = item.position.lng;
+        } else {
+          position.lat = item.position.coordinates[0];
+          position.lng = item.position.coordinates[1];
+        }
         itemData.position = position;
 
         let newsToSave = {
@@ -739,7 +839,7 @@ export default {
   watch: {
     getNews(val) {
       if (val && val.length) {
-        this.setAllNews(val);
+        this.setAllNews(val, false);
       }
     },
 

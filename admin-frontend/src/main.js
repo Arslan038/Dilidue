@@ -5,7 +5,7 @@ import routes from "./config/AppRoutes";
 // plugins
 import VueRouter from "vue-router";
 import VueBootstrap from "bootstrap-vue";
-import VueInsProgressBar from "vue-ins-progress-bar";
+// import VueInsProgressBar from "vue-ins-progress-bar";
 import VueCustomScrollbar from "vue-custom-scrollbar";
 import * as VueGoogleMaps from "vue2-google-maps";
 import Antd from "ant-design-vue";
@@ -21,11 +21,11 @@ Vue.config.productionTip = false;
 Vue.use(Antd);
 Vue.use(VueRouter);
 Vue.use(VueBootstrap);
-Vue.use(VueInsProgressBar, {
-    position: "fixed",
-    show: true,
-    height: "3px"
-});
+// Vue.use(VueInsProgressBar, {
+//     position: "fixed",
+//     show: true,
+//     height: "3px"
+// });
 Vue.use(VueGoogleMaps, {
     load: {
         key: "",
