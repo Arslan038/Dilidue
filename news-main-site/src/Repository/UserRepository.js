@@ -4,11 +4,17 @@ const user_login = 'auth/login';
 const user = 'user';
 const update_password = 'update_password';
 const linked_signup = 'linkedin';
+const linkedin_login = 'login/linkedin'
 
 export default {
   // Login Request
   authenticateUser(payload) {
     return Repository.post(`${user_login}`, payload);
+  },
+
+  // Login Request
+  linkedinLogin(payload) {
+    return Repository.get(`${linkedin_login}/${payload}`);
   },
 
   // Create New User

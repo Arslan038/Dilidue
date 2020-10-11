@@ -9,14 +9,11 @@ module.exports = (app) => {
   // CREATE User
   app.post('/api/user', user_controller.create_user);
 
-  // CREATE USER via LinkedIn
-  app.get('/api/linkedin_signup', (req, res, next) => {
-    const { user } = req;
-    res.json(user);
-  });
-
   // Login User
   app.post('/api/auth/login', user_controller.login);
+
+  // Login Linkedin USer
+  app.get('/api/login/linkedin/:id', user_controller.login_linkedin_user) 
 
   // Get ALL Users
   app.get('/api/users', checkAuth, user_controller.fetch_users);
@@ -42,15 +39,21 @@ module.exports = (app) => {
     user_controller.update_password
   );
 
-  // LinkedIn Login
-  app.get('/api/linkedin', passport.authenticate('linkedin'));
+  // CREATE USER via LinkedIn
+app.get('/api/linkedin_signup', user_controller.create_via_linkedin);
 
-  // Callback
-  app.get(
-    '/return',
-    passport.authenticate('linkedin', {
-      successRedirect: '/api/linkedin_signup',
-      failureRedirect: '/api/linkedin_signup',
-    })
-  );
-};
+
+
+ // LinkedIn Login
+ app.get('/api/linkedin', passport.authenticate('linkedin'));
+
+ // Callback
+ app.get(
+   '/return',
+   passport.authenticate('linkedin', {
+     successRedirect: '/api/linkedin_signup',
+     failureRedirect: '/api/linkedin_signup',
+   })
+ );
+
+}

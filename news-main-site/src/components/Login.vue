@@ -3,7 +3,7 @@
     <v-form @submit.prevent lazy-validation>
       <v-row class="mx-1 my-5" align="center" justify="center">
         <v-col cols="12">
-          <v-btn depressed color="indigo darken-4" dark large block>
+          <v-btn depressed color="indigo darken-4" dark large block @click="linkedInLogin">
             <v-icon class="mr-2">mdi-linkedin</v-icon>Login with Linkedin
           </v-btn>
         </v-col>
@@ -74,6 +74,9 @@ export default {
     ...mapActions(['loginUser']),
     register() {
       this.$emit('register', 1);
+    },
+    linkedInLogin() {
+      window.open('http://localhost:5000/api/linkedin', '_blank')
     },
     async loginNow() {
       if (!this.login.email.length || !this.login.password.length) {

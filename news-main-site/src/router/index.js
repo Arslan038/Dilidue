@@ -22,7 +22,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/login',
+    path: '/login/:status?/:user?',
     name: 'Login',
     component: () => import('../views/Login.vue'),
   },

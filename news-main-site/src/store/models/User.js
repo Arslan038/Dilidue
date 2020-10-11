@@ -64,6 +64,37 @@ const actions = {
     }
   },
 
+  // Login Linkedin User
+  async linkedinLogin({ commit }, payload) {
+    try {
+      let resp = await UserRepository.linkedinLogin(payload);
+      if (resp.status == 201) {
+        if (resp.data.user.role != 'user') {
+          commit('setToast', {
+            message: 'You are not allowed to Login.',
+            color: 'warning',
+            show: true,
+          });
+          return 0;
+        }
+        commit('setUser', resp.data);
+        commit('setToast', {
+          message: resp.data.message,
+          color: 'success',
+          show: true,
+        });
+        return 1;
+      }
+    } catch (err) {
+      commit('setToast', {
+        message: err.response.data.message,
+        color: 'red',
+        show: true,
+      });
+      return 0;
+    }
+  },
+
   // UPDATE USER
   async updateUser({ commit }, payload) {
     try {

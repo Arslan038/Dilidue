@@ -120,7 +120,8 @@ export default {
   methods: {
     ...mapActions(['createUser', 'socialSignup']),
     linkedInSignup() {
-      this.socialSignup();
+      //this.socialSignup();
+      window.open('http://localhost:5000/api/linkedin', '_blank')
     },
     login() {
       this.$emit('login', 0);
